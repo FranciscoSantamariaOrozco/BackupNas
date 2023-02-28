@@ -1,24 +1,44 @@
-# $limit = (Get-Date).AddDays(-60)
-# Get-ChildItem -Path "C:/" -Recurse | Where-Object { $_.LastWriteTime -lt $limit } | Select-Object FullName, LastWriteTime | Format-Table -AutoSize
+# Auto-Backup SharepointOnline
+# Autor: Francisco Orozco
 
-$limit = (Get-Date).AddDays(-60)
-$files = Get-ChildItem -Path "C:/" -Recurse | Where-Object { $_.LastWriteTime -lt $limit }
-
-# Import the SharePointPnPPowerShellOnline module
 Import-Module SharePointPnPPowerShellOnline
 
-# Connect to SharePoint Online
-Connect-PnPOnline -Url "https://<tenant>.sharepoint.com/sites/<sitename>" -Credentials (Get-Credential)
+# Limite de idade do ficheiro
+$limit = (Get-Date).AddDays(-60)
 
-# Loop through the old files and move them to SharePoint Online
+# Path em que o scan será realizado
+# Ex: $pasta = "C:/"
+$pasta = "C:/probasscriptsharepoint/"
+
+# Dados sharepoint
+#
+# $urlsharepoint: é necessário indicar o endereço do sharepoint com o seu nºTenant (entre aspas).
+# Ex: $urlsharepoint = "https://<tenant>.sharepoint.com/sites/<sitename>"
+$urlsharepoint = "https://<tenant>.sharepoint.com/sites/<sitename>"
+
+# $urlworkdir: Pasta Sharepoint na qual as cópias serão guardadas.
+# Ex: $urlworkdir = "/sites/<sitename>/Shared Documents/Old Files"
+$urlworkdir = "/sites/<sitename>/Shared Documents/Old Files"
+
+# $username e $password: utilizador e palavra-passe autorizados a escrever para sharepoint.
+# Ex: $username = "user@domain.com"
+#     $password = ConvertTo-SecureString "yourpaswordhere" -AsPlainText -Force
+$username = "user@domain.com"
+$password = ConvertTo-SecureString "yourpaswordhere" -AsPlainText -Force
+$creds = New-Object System.Management.Automation.PSCredential ($username, $password)
+
+# Não modificar nada a partir desta linha.
+##############################################################################################################################################
+# ligação sharepoint
+Connect-PnPOnline -Url $urlsharepoint -Credentials $creds
+
+# detecção de ficheiros com mais de 60 dias.
+$files = Get-ChildItem -Path $pasta -Recurse | Where-Object { $_.LastWriteTime -lt $limit }
+
+# Percorrer os ficheiros e movê-los para SharePoint
 foreach ($file in $files)
 {
-    # Specify the target folder in SharePoint Online
-    $targetFolder = "/sites/<sitename>/Shared Documents/Old Files"
-
-    # Upload the file to SharePoint Online
-    Add-PnPFile -Path $file.FullName -Folder $targetFolder
-
-    # Output status message
-    Write-Host "Moved file $($file.FullName) to $targetFolder"
+    Add-PnPFile -Path $file.FullName -Folder $urlworkdir
+    Write-Host "Moved file $($file.FullName) to $urlworkdir"
 }
+##############################################################################################################################################
