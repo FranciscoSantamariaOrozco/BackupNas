@@ -11,11 +11,13 @@ $limit = (Get-Date).AddDays(-60)
 $pasta = "C:/probasscriptsharepoint/"
 
 # Dados sharepoint
-#
 # $urlsharepoint: é necessário indicar o endereço do sharepoint com o seu nºTenant (entre aspas).
-# Ex: $urlsharepoint = "https://<tenant>.sharepoint.com/sites/<sitename>"
+#
+# To find your Microsoft 365 tenant ID in the Azure AD admin center
+# Your tenant ID can be found in the Tenant ID box on the Properties page.
+# Ex: $urlsharepoint = "https://<tenant>.sharepoint.com/sites/<sitename>;"
 
-$urlsharepoint = "https://<tenant>.sharepoint.com/sites/<sitename>"
+$urlsharepoint = "https://<tenant>.sharepoint.com/sites/<sitename>;"
 
 # $urlworkdir: Pasta Sharepoint na qual as cópias serão guardadas.
 # Ex: $urlworkdir = "/sites/<sitename>/Shared Documents/Old Files"
@@ -24,16 +26,16 @@ $urlworkdir = "/sites/<sitename>/Shared Documents/Old Files"
 
 # $username e $password: utilizador e palavra-passe autorizados a escrever para sharepoint.
 # Ex: $username = "user@domain.com"
-#     $password = ConvertTo-SecureString "yourpaswordhere" -AsPlainText -Force
+#     $password = ConvertTo-SecureString "yourpaswordhere" -AsPlainText -Force
 
 $username = "user@domain.com"
 $password = ConvertTo-SecureString "yourpaswordhere" -AsPlainText -Force
 
-##############################################################################################################################################
-##############################################################################################################################################
+####################################################################################
+####################################################################################
 # Não modificar nada a partir desta linha.
-##############################################################################################################################################
-##############################################################################################################################################
+####################################################################################
+####################################################################################
 # Importação do módulo sharepoint
 Import-Module SharePointPnPPowerShellOnline
 
@@ -49,7 +51,7 @@ $files = Get-ChildItem -Path $pasta -Recurse | Where-Object { $_.LastWriteTime -
 # Percorrer os ficheiros e movê-los para SharePoint
 foreach ($file in $files)
 {
-    Add-PnPFile -Path $file.FullName -Folder $urlworkdir
-    Write-Host "Moved file $($file.FullName) to $urlworkdir"
+    Add-PnPFile -Path $file.FullName -Folder $urlworkdir
+    Write-Host "Moved file $($file.FullName) to $urlworkdir"
 }
-##############################################################################################################################################
+####################################################################################
